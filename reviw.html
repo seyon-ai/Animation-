@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+        
+        video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            min-width: 100%;
+            min-height: 100%;
+            z-index: 1;
+        }
+        
+        .blur-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            display: none;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            color: white;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .review-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            color: #333;
+            width: 90%;
+            max-width: 500px;
+            display: none;
+        }
+        
+        .stars {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .star {
+            font-size: 30px;
+            color: #ccc;
+            cursor: pointer;
+            margin: 0 5px;
+            transition: color 0.2s;
+        }
+        
+        .star:hover, .star.active {
+            color: #ffcc00;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            min-height: 100px;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #ffa3a3);
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        p {
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .thank-you {
+            display: none;
+            font-size: 2rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <video id="mainVideo" autoplay muted>
+        <source src="6.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <div class="blur-overlay" id="blurOverlay"></div>
+    
+    <div class="content">
+        <div class="review-container" id="reviewContainer">
+            <h1>How Was Your Experience?</h1>
+            <p>We'd love to hear your thoughts about our animations</p>
+            
+            <div class="stars" id="stars">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
+            </div>
+            
+            <textarea placeholder="Share your thoughts (optional)..."></textarea>
+            
+            <button id="submitReview">Submit Review</button>
+        </div>
+        
+        <div class="thank-you" id="thankYou">
+            <h1>Thank You for Your Review!</h1>
+            <p>We appreciate your feedback</p>
+        </div>
+    </div>
+
+    <script>
+        const video = document.getElementById('mainVideo');
+        const blurOverlay = document.getElementById('blurOverlay');
+        const reviewContainer = document.getElementById('reviewContainer');
+        const stars = document.querySelectorAll('.star');
+        const submitBtn = document.getElementById('submitReview');
+        const thankYou = document.getElementById('thankYou');
+        let selectedRating = 0;
+        
+        video.addEventListener('ended', function() {
+            blurOverlay.style.display = 'block';
+            reviewContainer.style.display = 'block';
+        });
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                selectedRating = rating;
+                
+                stars.forEach((s, index) => {
+                    if (index < rating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+        
+        submitBtn.addEventListener('click', function() {
+            // In a real app, you would send the review to your server here
+            reviewContainer.style.display = 'none';
+            thankYou.style.display = 'block';
+            
+            // After showing thanks for 3 seconds, you could redirect to homepage
+            setTimeout(() => {
+                // window.location.href = 'index.html';
+            }, 3000);
+        });
+        
+        // If video fails to load, show review after 5 seconds
+        setTimeout(function() {
+            if (blurOverlay.style.display !== 'block') {
+                blurOverlay.style.display = 'block';
+                reviewContainer.style.display = 'block';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
